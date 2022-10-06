@@ -1,11 +1,12 @@
 const inquirer = require("inquirer");
+const fs = require('fs');
 const Employee = require("./lib/Employee");
 const Engineer = require("./lib/Engineer");
 const Manager = require("./lib/Manager");
 const Intern = require("./lib/Intern");
+const generateHTML = require("./src/generateHTML")
 
-
-memberArray = [];
+const memberArray = [];
 createTeam()
 function createTeam() {
     addManager()
@@ -20,8 +21,8 @@ function addMember() {
     }).then(({ choice }) => {
         if (choice === 'Complete Team') {
             console.log("Completing Team")
-            console.log(memberArray)
-            return
+
+            makeFile(...memberArray)
         } else if (choice === 'Add Engineer') {
             addEngineer()
         } else if (choice === 'Add Intern') {
@@ -51,7 +52,7 @@ function addManager() {
             {
                 type: `input`,
                 name: `officeNumber`,
-                message: `Please enter the Engineer's github.`
+                message: `Please enter the Manager's office number.`
             },
         ]).then(managerData => {
             const { name, id, email, officeNumber } = managerData;
@@ -86,9 +87,10 @@ function addEngineer() {
                 message: `Please enter the Engineer's github.`
             },
         ]).then((engineerData) => {
-            this.memberArray.push(new Engineer(engineerData));
+            memberArray.push(new Engineer(engineerData));
             console.log(engineerData)
             addMember()
+
         })
 }
 
@@ -123,4 +125,36 @@ function addIntern() {
             memberArray.push(intern);
             addMember()
         })
+}
+
+
+function makeFile(...memberArray) {
+    fs.writeFile('mynewfile3.html', `<head>  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"></head>
+    <body>
+    <div class="card">
+  <p> Manager: ${memberArray[0].name}</p>
+  <p> ID: ${memberArray[0].id}</p>
+  <p> Email: ${memberArray[0].email}</p>
+  <p> Office Number: ${memberArray[0].officeNumber}</p>
+</div>
+<div class="card">
+<p> Engineer: ${memberArray[1].name}</p>
+<p> ID: ${memberArray[1].id}</p>
+<p> Email: ${memberArray[1].email}</p>
+<p> Github: ${memberArray[1].github}</p>
+</div>
+<div class="card">
+<p> Intern: ${memberArray[2].name}</p>
+<p> ID: ${memberArray[2].id}</p>
+<p> Email: ${memberArray[2].email}</p>
+<p> School: ${memberArray[2].school}</p>
+</div>
+    </body>
+
+
+`, function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+    });
 }
